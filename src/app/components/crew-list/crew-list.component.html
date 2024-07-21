@@ -2,5 +2,9 @@
     <button (click)="onCreate()">+ Yeni Kayıt</button>
 </div>
 
-<ag-grid-angular class="ag-theme-quartz" style="height: 500px" [rowData]="crews" [columnDefs]="colDefs">
+<ag-grid-angular #grid class="ag-theme-quartz" style="height: 500px" [rowData]="crews" [columnDefs]="colDefs">
 </ag-grid-angular>
+
+
+
+<label translate='First_Name'></label>

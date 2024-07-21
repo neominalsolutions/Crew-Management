@@ -1,27 +1,82 @@
 import { Component, OnInit } from '@angular/core';
 import { Route, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular';
-import { ColDef } from 'ag-grid-community';
+import { ColDef, GridApi } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 import { CrewService } from '../../services/crew.service';
 import { ButtonRendererComponent } from '../../buttons/button-render.component';
 import { CommonModule } from '@angular/common';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'crew-list',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, AgGridModule, CommonModule],
+  imports: [
+    RouterOutlet,
+    RouterModule,
+    AgGridModule,
+    CommonModule,
+    TranslateModule,
+  ],
   templateUrl: './crew-list.component.html',
   styleUrl: './crew-list.component.css',
 })
 export class CrewListComponent implements OnInit {
   crews: any[] = [];
+  colDefs: ColDef[] = [];
 
-  constructor(private service: CrewService, private router: Router) {}
+  constructor(
+    private service: CrewService,
+    private router: Router,
+    private translateService: TranslateService
+  ) {}
 
   ngOnInit(): void {
-    console.log('refresh');
+    console.log('refresh', this.translateService.instant('First_Name'));
+
+    // Her Dil değişiminde Header güncellemesi yap.
+    // her dil değişimde burayı takip edi
+    this.translateService.onLangChange.subscribe((lang) => {
+      this.colDefs = [
+        {
+          headerName: 'Card',
+          cellRenderer: ButtonRendererComponent,
+          cellRendererParams: {
+            onClick: this.onCard.bind(this),
+            label: 'Card',
+          },
+        },
+        {
+          headerName: 'Edit',
+          cellRenderer: ButtonRendererComponent,
+          cellRendererParams: {
+            onClick: this.onEdit.bind(this),
+            label: 'Edit',
+          },
+        },
+        {
+          headerName: 'Delete',
+          cellRenderer: ButtonRendererComponent,
+          cellRendererParams: {
+            onClick: this.onDelete.bind(this),
+            label: 'Delete',
+          },
+        },
+        {
+          headerName: this.translateService.instant('First_Name'),
+          field: 'First_Name',
+        },
+        { field: 'Last_Name' },
+        { field: 'Nationality' },
+        { field: 'Title' },
+        { field: 'Days_On_Board', flex: 0.8 },
+        { field: 'Daily_Rate', flex: 0.8 },
+        { field: 'Currency', flex: 0.8 },
+        { field: 'Total_Income', flex: 1.5 },
+      ];
+    });
+
     this.service.getAll().subscribe((response: any) => {
       this.crews = response;
     });
@@ -93,42 +148,6 @@ export class CrewListComponent implements OnInit {
         }
       });
   }
-
-  colDefs: ColDef[] = [
-    {
-      headerName: 'Card',
-      cellRenderer: ButtonRendererComponent,
-      cellRendererParams: {
-        onClick: this.onCard.bind(this),
-        label: 'Card',
-      },
-    },
-    {
-      headerName: 'Edit',
-      cellRenderer: ButtonRendererComponent,
-      cellRendererParams: {
-        onClick: this.onEdit.bind(this),
-        label: 'Edit',
-      },
-    },
-    {
-      headerName: 'Delete',
-      cellRenderer: ButtonRendererComponent,
-      cellRendererParams: {
-        onClick: this.onDelete.bind(this),
-        label: 'Delete',
-      },
-    },
-    { field: 'First_Name' },
-    { field: 'Last_Name' },
-    { field: 'Nationality' },
-    { field: 'Title' },
-    { field: 'Days_On_Board', flex: 0.8 },
-    { field: 'Daily_Rate', flex: 0.8 },
-    { field: 'Currency', flex: 0.8 },
-    { field: 'Total_Income', flex: 1.5 },
-    // { field: "" },
-  ];
 
   onClick() {
     alert('Tıklandı');

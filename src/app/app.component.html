@@ -1,5 +1,13 @@
 <header>
   <h1>Menu</h1>
+
+  <select #language (change)="onChange(language.value)">
+    <option *ngFor="let lang of translateService.getLangs()" [value]="lang">{{
+      lang | translate
+      }}</option>
+  </select>
+
+  
 </header>
 
 <router-outlet></router-outlet>
